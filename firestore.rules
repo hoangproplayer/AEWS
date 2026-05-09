@@ -1,0 +1,44 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Default deny
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isAdmin() {
+      return isSignedIn() && 
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'ADMIN';
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    // Users collection
+    match /users/{userId} {
+      allow read: if isSignedIn();
+      allow write: if isOwner(userId) || isAdmin();
+    }
+
+    // Students collection
+    match /students/{studentId} {
+      allow read: if true; // Cho phép đọc để demo (REQ-07)
+      allow write: if true; // Cho phép ghi để demo (REQ-01, REQ-10)
+    }
+
+    // Counseling logs (Nhật ký tư vấn)
+    match /counseling_logs/{logId} {
+      allow read, write: if true;
+    }
+
+    // Rules
+    match /rules/{ruleId} {
+      allow read, write: if true;
+    }
+  }
+}

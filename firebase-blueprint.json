@@ -1,0 +1,42 @@
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "User profile with role-based access control",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string" },
+        "email": { "type": "string" },
+        "displayName": { "type": "string" },
+        "role": { "type": "string", "enum": ["STUDENT", "ADVISOR", "MANAGER", "ADMIN"] },
+        "photoURL": { "type": "string" }
+      },
+      "required": ["uid", "email", "role"]
+    },
+    "Student": {
+      "title": "Student",
+      "description": "Student academic data and risk profile",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "class": { "type": "string" },
+        "gpa": { "type": "number" },
+        "level": { "type": "string", "enum": ["SAFE", "WARNING", "DANGER"] },
+        "status": { "type": "string", "enum": ["PROCESSED", "PENDING"] },
+        "lastAnalyzed": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "name", "gpa", "level"]
+    }
+  },
+  "firestore": {
+    "users/{userId}": {
+      "schema": "User",
+      "description": "User profiles"
+    },
+    "students/{studentId}": {
+      "schema": "Student",
+      "description": "Student academic records"
+    }
+  }
+}
